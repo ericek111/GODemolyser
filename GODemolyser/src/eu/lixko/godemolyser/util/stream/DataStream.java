@@ -7,57 +7,57 @@ import eu.lixko.godemolyser.util.logger.StringFormat;
 
 public abstract class DataStream {
 
-	protected int bitIndex = 0;
-	protected int start = 0;
-	protected int length = 0;
+	protected long bitIndex = 0;
+	protected long start = 0;
+	protected long length = 0;
 	protected ByteOrder endianess;
 
 	// byte[] arr;
 
-	public abstract byte getRawBit(int bitOffset);
+	public abstract byte getRawBit(long bitOffset);
 
-	public abstract byte getRawByte(int byteOffset);
+	public abstract byte getRawByte(long byteOffset);
 
-	public abstract DataStream subset(int bitStart, int bitLength);
+	public abstract DataStream subset(long bitStart, long bitLength);
 
-	public int byteIndex() {
+	public long byteIndex() {
 		return bitIndex >> 3;
 	}
 
-	public int bitIndex() {
+	public long bitIndex() {
 		return bitIndex;
 	}
 
-	public int byteIndex(int bytes) {
+	public long byteIndex(long bytes) {
 		return bitIndex = bytes * 8;
 	}
 
-	public int bitIndex(int bits) {
+	public long bitIndex(long bits) {
 		return bitIndex = bits;
 	}
 
-	public int start() {
+	public long start() {
 		return start;
 	}
 
-	public int bitLength() {
+	public long bitLength() {
 		return length;
 	}
 
-	public int byteLength() {
+	public long byteLength() {
 		return length >> 3;
 	}
 
-	public int remaining() {
+	public long remaining() {
 		return length - bitIndex;
 	}
 
-	public void forward(int bits) {
+	public void forward(long bits) {
 		// TODO: Implement overflow
 		bitIndex += bits;
 	}
 
-	public void back(int bits) {
+	public void back(long bits) {
 		// TODO: Implement underflow
 		bitIndex -= bits;
 	}
@@ -75,8 +75,8 @@ public abstract class DataStream {
 		return this.bitIndex < this.length;
 	}
 
-	public int readBits(int offset, int bits, boolean signed, boolean advance) {
-		int available = (this.length - offset);
+	public int readBits(long offset, long bits, boolean signed, boolean advance) {
+		long available = (this.length - offset);
 		offset += this.start;
 
 		// TODO: Handle 1 byte reads more efficiently (condition and skip the loop?)
@@ -100,7 +100,7 @@ public abstract class DataStream {
 		}
 
 		int value = 0;
-		for (int i = 0; i < bits;) {
+		for (long i = 0; i < bits;) {
 			int read;
 
 			// Read an entire byte if we can.
@@ -135,84 +135,84 @@ public abstract class DataStream {
 
 	/******************************** GET (without position increment) ********************************/
 
-	public int getBits(int offset, int bits, boolean signed) {
+	public int getBits(long offset, int bits, boolean signed) {
 		return this.readBits(offset, bits, signed, false);
 	}
 
-	public byte getBit(int offset) {
+	public byte getBit(long offset) {
 		return (byte) getRawBit(offset);
 	}
 
-	public boolean getBoolean(int offset) {
+	public boolean getBoolean(long offset) {
 		return getBits(offset, 1 * 8, true) != 0;
 	}
 
-	public boolean getBitBoolean(int offset) {
+	public boolean getBitBoolean(long offset) {
 		return getBits(offset, 1, false) != 0;
 	}
 
-	public byte getByte(int offset) {
+	public byte getByte(long offset) {
 		return (byte) getBits(offset, Byte.BYTES * 8, true);
 	}
 
-	public byte getUByte(int offset) {
+	public byte getUByte(long offset) {
 		return (byte) getBits(offset, Byte.BYTES * 8, false);
 	}
 
-	public short getShort(int offset) {
+	public short getShort(long offset) {
 		return (short) getBits(offset, Short.BYTES * 8, true);
 	}
 
-	public int getUShort(int offset) {
+	public int getUShort(long offset) {
 		return (int) getBits(offset, Short.BYTES * 8, false);
 	}
 
-	public char getChar(int offset) {
+	public char getChar(long offset) {
 		return (char) getBits(bitIndex, Character.BYTES * 8, true);
 	}
 
-	public int getInt(int offset) {
+	public int getInt(long offset) {
 		return getBits(offset, Integer.BYTES * 8, true);
 	}
 
-	public int getUInt(int offset) {
+	public int getUInt(long offset) {
 		return getBits(offset, Integer.BYTES * 8, false);
 	}
 
-	public long getLong(int offset) {
+	public long getLong(long offset) {
 		int x = getBits(offset, 4 * 8, false);
 		int y = getBits(offset, 4 * 8, false);
 		return (((long) x) << 32) | (y & 0xffffffffL);
 	}
 
-	public float getFloat(int offset) {
+	public float getFloat(long offset) {
 		return Float.intBitsToFloat(getBits(offset, 4 * 8, false));
 	}
 
-	public double getDouble(int offset) {
+	public double getDouble(long offset) {
 		return Double.longBitsToDouble(getLong(offset));
 	}
 
-	public byte[] getBytes(int offset, byte[] to) {
+	public byte[] getBytes(long offset, byte[] to) {
 		for (int i = 0; i < to.length; i++) {
 			to[i] = getByte(offset + i * 8);
 		}
 		return to;
 	}
 
-	public byte[] getBytes(int offset, int length) {
+	public byte[] getBytes(long offset, int length) {
 		return this.getBytes(offset, new byte[length]);
 	}
 
-	public String getFixedString(int offset, int length) {
+	public String getFixedString(long offset, int length) {
 		byte[] data = new byte[length];
 		getBytes(offset, data);
 		return new String(data);
 	}
 
-	public String getString(int offset) {
+	public String getString(long offset) {
 		StringBuilder sb = new StringBuilder();
-		for (int i = offset; i < length; i += 8) {
+		for (long i = offset; i < length; i += 8) {
 			char c = (char) (getByte(i) & 0xFF);
 			if (c == '\0')
 				break;
@@ -300,7 +300,7 @@ public abstract class DataStream {
 
 	public String readString() {
 		StringBuilder sb = new StringBuilder();
-		for (int i = bitIndex; i < length; i += 8) {
+		for (long i = bitIndex; i < length; i += 8) {
 			char c = (char) (getByte(i) & 0xFF);
 			if (c == '\0')
 				break;
@@ -343,7 +343,7 @@ public abstract class DataStream {
 
 	public int readVarInt_orig() throws InvalidDataException {
 		// See implementation notes for readRawVarint64
-		int origi = this.bitIndex();
+		long origi = this.bitIndex();
 		int x;
 		
 		if ((x = this.readByte()) >= 0) {

@@ -3,8 +3,6 @@ package eu.lixko.godemolyser.util.logger;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -389,17 +387,16 @@ public class StringFormat {
 					result.append(' ');
 				}
 				Object fobj = field.get(obj);
-				if (fobj == null) {
-					result.append("null");
-				} else if (field.getType().isArray()) {
+				if (field.getType().isArray()) {
 					result.append(fobj.getClass().getComponentType().getName());
 					result.append("[]");
 				} else {
 					String fieldType = field.getType().getName();
-					if (!fieldType.startsWith("java.lang.")) {
-						fieldType = field.getGenericType().toString();
-					}
-					result.append(fieldType.replaceAll("java.lang.", ""));
+					if (fieldType.startsWith("java.lang.")) {
+						result.append(fieldType.substring("java.lang.".length()));
+					} else {
+						result.append(fieldType);
+					}				
 				}
 				result.append(' ');
 				result.append(field.getName());
@@ -418,15 +415,11 @@ public class StringFormat {
 							result.append("]");
 						} else {
 							alreadyDumped.get().add(fobj);
-							if (field.getClass().getMethod("toString").getDeclaringClass() != Object.class) {
-								result.append(fobj.toString());
-							} else {
-								result.append(dumpObj(fobj, "", level + 1, field, dumpModifiers, numindices));
-							}
+							result.append(dumpObj(fobj, "", level + 1, field, dumpModifiers, numindices));							
 						}
 					}
 				}
-			} catch (IllegalAccessException | NoSuchMethodException | SecurityException ex) {
+			} catch (IllegalAccessException ex) {
 				System.out.println(ex);
 			}
 			result.append(newLine);

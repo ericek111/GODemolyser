@@ -24,7 +24,7 @@ public class DemoFile extends Eventable {
 	private DemoFormat.democmdheader_t cmdh = new DemoFormat.democmdheader_t();
 	private DemoFormat.democmdinfo_t[] cmdinfoarr = StringFormat.fill(new DemoFormat.democmdinfo_t[DemoFormat.MAX_SPLITSCREEN_CLIENTS], () -> new DemoFormat.democmdinfo_t());
 	private HashMap<Integer, byte[]> instanceBaselines = new HashMap<>();
-	private StringTableParser stringTables = new StringTableParser();
+	private StringTableParser stringTables = new StringTableParser(instanceBaselines);
 	private SendTableParser dataTables = new SendTableParser(instanceBaselines);
 	private PacketParser packetParser = new PacketParser();
 	private int demotick = 0;
@@ -38,8 +38,8 @@ public class DemoFile extends Eventable {
 		streamsr = new DataStreamStructReader(stream);
 		stream.order(ByteOrder.LITTLE_ENDIAN);
 		stream.rewind();
-		if ((stream.remaining() / 8) < header.size())
-			throw new IllegalArgumentException("Failed to open demo: file too small.");
+		//if ((stream.remaining() * 8) < header.size())
+		//	throw new IllegalArgumentException("Failed to open demo: file too small.");
 		header.readUsing(streamsr);
 		this.fire("demoheader", header);
 
@@ -68,8 +68,8 @@ public class DemoFile extends Eventable {
 		
 		this.fire("cmd");
 		if ((stream.bitIndex() & 7) != 0) {
-			System.out.println(stream.bitIndex() & 7);
-			System.exit(0);
+			//System.out.println(stream.bitIndex() & 7);
+			//System.exit(0);
 		}
 		
 		// COMMAND HANDLERS
@@ -118,8 +118,6 @@ public class DemoFile extends Eventable {
 			default:
 				throw new Exception("Unrecognized command: " + cmdh.cmd);
 		}
-		
-		this.fire("cmd_past");
 
 		return true;
 	}

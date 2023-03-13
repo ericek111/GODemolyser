@@ -37,6 +37,25 @@ public class BufferStruct {
 		}
 		this.afterRead();
 	}
+	
+	public void writeUsing(IStructWriter writer) {
+		this.beforeRead();
+		for (Field f : this.getClass().getDeclaredFields()) {
+			if (!Modifier.isPublic(f.getModifiers()) || f.isAnnotationPresent(SkipField.class))
+				continue;
+			fieldlen = getFieldLen(f);
+			try {
+				if (f.getType().isArray())
+					writer.writeArray(this, f.get(this), f);
+				else
+					writer.writeField(this, f);
+			} catch (IllegalArgumentException | IllegalAccessException | InstantiationException e) {
+				e.printStackTrace();
+				this.lastException = e;
+			}
+		}
+		this.afterRead();
+	}
 
 
 	private int countStruct() {

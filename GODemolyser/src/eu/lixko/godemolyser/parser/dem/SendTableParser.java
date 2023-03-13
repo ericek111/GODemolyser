@@ -53,7 +53,7 @@ public class SendTableParser extends Eventable implements IChunkParser {
 
 			sendTable.getPropsList().forEach(prop -> {
 				if ((prop.getFlags() & DataTable.SPROP_EXCLUDE) != 0) {
-					// System.out.println("exclude: " + sendTable.getNetTableName() + " / " + prop.getVarName());
+					System.out.println("exclude: " + sendTable.getNetTableName() + " / " + prop.getVarName());
 				}
 				// if (prop.type.ordinal() == 6) System.out.println("> " + prop.DTName + " / " + prop.varName);
 			});

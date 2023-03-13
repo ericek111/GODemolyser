@@ -13,6 +13,9 @@ public abstract class DataStream {
 	protected ByteOrder endianess;
 
 	// byte[] arr;
+	
+	// all the bit offset/start BS is handled here. In the implementation classes, we must only read
+	// from the underlying buffers on positions given by byteOffset and bitOffset.
 
 	public abstract byte getRawBit(long bitOffset);
 
@@ -193,15 +196,15 @@ public abstract class DataStream {
 		return Double.longBitsToDouble(getLong(offset));
 	}
 
-	public byte[] getBytes(long offset, byte[] to) {
+	public byte[] getBytes(long bitOffset, byte[] to) {
 		for (int i = 0; i < to.length; i++) {
-			to[i] = getByte(offset + i * 8);
+			to[i] = getByte(bitOffset + i * 8);
 		}
 		return to;
 	}
 
-	public byte[] getBytes(long offset, int length) {
-		return this.getBytes(offset, new byte[length]);
+	public byte[] getBytes(long bitOffset, int length) {
+		return this.getBytes(bitOffset, new byte[length]);
 	}
 
 	public String getFixedString(long offset, int length) {

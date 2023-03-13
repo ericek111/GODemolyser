@@ -14,10 +14,6 @@ public class DemoFormat {
 	public static final int FDEMO_USE_ANGLES2 = (1 << 1);
 	public static final int FDEMO_NOINTERP = (1 << 2); // don't interpolate between this an last view
 	public static final int MAX_SPLITSCREEN_CLIENTS = 2;
-	
-	public static final int SUBSTRING_BITS = 5;
-	public static final int MAX_USERDATA_BITS = 14;
-	public static final int MAX_USERDATA_SIZE = (1 << MAX_USERDATA_BITS);
 
 	public enum dem_msg {
 		dem_0,

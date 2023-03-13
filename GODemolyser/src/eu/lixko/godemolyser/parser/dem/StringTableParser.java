@@ -31,6 +31,9 @@ public class StringTableParser extends Eventable implements IChunkParser {
 	
 	@Override
 	public void parse(DataStream chunkbuf) throws InvalidDataException {
+		if (true)
+			return;
+		
 		int numTables = chunkbuf.readUByte();
 		for(int i = 0; i < numTables; i++) {
 			
@@ -45,7 +48,7 @@ public class StringTableParser extends Eventable implements IChunkParser {
 				entries[entryIndex] = entry;
 				
 				if (tableName.contains("Rules"))
-				System.out.println("entry: @ " + chunkbuf.remaining() + ": " + entry);
+					System.out.println("entry: @ " + chunkbuf.remaining() + ": " + entry);
 				
 				if(chunkbuf.readBitBoolean()) { // hasUserData
 					

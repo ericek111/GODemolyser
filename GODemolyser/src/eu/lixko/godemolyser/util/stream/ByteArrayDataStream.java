@@ -2,7 +2,7 @@ package eu.lixko.godemolyser.util.stream;
 
 public class ByteArrayDataStream extends DataStream {
 	
-	// TODO: long > int cast error handling
+	// TODO: long > int cast error handling for long arrays
 	
 	private byte[] arr;
 	
